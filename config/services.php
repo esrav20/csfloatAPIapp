@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'csfloat' => [
+        'api_key' => env('CSFLOAT_API_KEY'),
+        'api_url' => env('CSFLOAT_API_URL')
+    ]
 
 ];
