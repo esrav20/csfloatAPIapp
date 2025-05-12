@@ -1,8 +1,9 @@
 import AppLayout from '@/layouts/app-layout';
+import React from 'react';
 import { Head } from '@inertiajs/react';
 
 
-// @ts-ignore
+// @ts-expect-error: Suppressing type-check error because the item's type is inferred dynamically
 const ItemCard = ({ item }) => {
     const {
         id,
@@ -44,7 +45,7 @@ const ItemCard = ({ item }) => {
         </div>
     );
 };
-export default function Index({listings}) {
+export default function Index({ listings }: { listings: Array<{ id: number, created_at: string, type: string, price: number, state: string, seller: { avatar: string, username: string }, item: { market_hash_name: string, description: string } }> }) {
     return (
         <AppLayout>
             <Head title="Dashboard" />

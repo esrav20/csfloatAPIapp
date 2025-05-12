@@ -15,10 +15,28 @@ class CSFloatService
         $this->apiKey = config('services.csfloat.api_key');
     }
 
-    public function fetchData($endpoint)
+    public function fetchAndStoreListings($endpoint)
     {
-        return Http::withHeaders(["Authorization"=>$this->apiKey])
+        // Fetch the data from the external API
+        $response = Http::withHeaders([
+            "Authorization" => $this->apiKey,
+        ])
             ->get("{$this->baseUrl}/{$endpoint}")
             ->json();
+
+        // Process and store listings in the database
+        foreach ($response['listings'] as $listing) {
+            Listing::updateOrCreate(
+                ['external_id' => $listing['id']],
+                [
+                    'title' => $listing['title'],
+                    'description' => $listing['description'] ?? '',
+                    'price' => $listing['price'],
+                    'external_id' => $listing['id'],
+                ]
+            );
+        }
+
+        return $response['listings'];
     }
-};
+}
