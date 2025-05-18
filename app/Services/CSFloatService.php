@@ -30,24 +30,34 @@ class CSFloatService
         $data = $response->json("data");
 
         foreach ($data as $listing) {
-            // Vi finder eller opretter et nyt Listing objekt.
-            $listingModel = Listing::updateOrCreate(
-                ['external_id' => $listing['id']],
+            $listingModel = Listing::where('external_id', $listing['id'])->first();
+            if (!$listingModel) {
+                $listingModel = Listing::create(
+                    [
+                        'external_id' => $listing['id'],
+                        'type' => $listing['type'],
+                        'created_at' => $listing['created_at'],
+                        'price' => $listing['price'],
+                        'state' => $listing['state'],
+                        'seller' => $listing['seller'],
+                        'item' => $listing['item'],
+                        'is_seller' => $listing['is_seller'],
+                        'min_offer_price' => $listing['min_offer_price'] ?? null,
+                        'max_offer_discount' => $listing['max_offer_discount'] ?? null,
+                        'is_watchlisted' => $listing['is_watchlisted'],
+                        'watchers' => $listing['watchers']
+                    ]
+
+                );
+            }
+            ListingSnapshot::create(
                 [
-                    'title' => $listing['item']['item_name'],
-                    'description' => $listing['item']['item_description'],
-                    'price' => $listing['price'],
-                    'external_id' => $listing['id'],
-                    'seller_data' => $listing['seller_data'],
-                    'item_data' => $listing['item_data'],
-                ]
-            );
+                'listing_id' => $listingModel->id,
+                'price' => $listing['price'],
+                'snapshot_at' => now(),
+            ]);
         }
-        ListingSnapshot::create([
-            'listing_id' => $listingModel->id,
-            'price' => $listing['price'],
-            'snapshot_at' => now(),
-        ]);
+
 
         return $data;
     }

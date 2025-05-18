@@ -8,8 +8,8 @@ class Listing extends Model
 {
     protected $fillable = [
         'external_id',
-        'created_at',
         'type',
+        'created_at',
         'price',
         'state',
         'seller',
