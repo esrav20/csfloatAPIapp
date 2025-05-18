@@ -7,15 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 class Listing extends Model
 {
     protected $fillable = [
-        'title',
-        'description',
-        'price',
         'external_id',
-        'item_data',
-        'seller_data'
+        'created_at',
+        'type',
+        'price',
+        'state',
+        'seller',
+        'item',
+        'is_seller',
+        'min_offer_price',
+        'max_offer_discount',
+        'is_watchlisted',
+        'watchers',
     ];
+
     protected $casts = [
-        'item_data' => 'array',
-        'seller_data' => 'array'
+        'created_at' => 'datetime',
+        'seller' => 'array',    // cast JSON to array automatically
+        'item' => 'array',
+        'is_seller' => 'boolean',
+        'is_watchlisted' => 'boolean',
     ];
 }

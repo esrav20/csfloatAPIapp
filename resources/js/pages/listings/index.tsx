@@ -2,60 +2,71 @@ import AppLayout from '@/layouts/app-layout';
 import React from 'react';
 import { Head } from '@inertiajs/react';
 
+type Listing = {
+    id: number;
+    created_at: string;
+    type: string;
+    price: number;
+    state: string;
+    item_data: {
+        market_hash_name: string;
+        description: string;
+    };
+    seller_data: {
+        avatar: string;
+        username: string;
+    };
+};
+const ItemCard = ({ item }: {item: Listing}) => {
+    const { id, created_at, type, price, state, item_data, seller_data } = item;
 
-// @ts-expect-error: Suppressing type-check error because the item's type is inferred dynamically
-const ItemCard = ({ item }) => {
-    const {
-        id,
-        created_at,
-        type,
-        price,
-        state,
-        seller,
-        item: itemDetails
-    } = item;
 
     return (
-        <div className="max-w-md mx-auto bg-white shadow-md rounded-lg overflow-hidden my-4">
+        <div className="mx-auto my-4 max-w-md overflow-hidden rounded-lg bg-white shadow-md">
             <div className="p-4">
-                <h3 className="text-xl font-bold mb-2">{itemDetails.market_hash_name}</h3>
-                <p className="text-gray-600 text-sm"><strong>ID:</strong> {id}</p>
-                <p className="text-gray-600 text-sm"><strong>Type:</strong> {type}</p>
-                <p className="text-gray-600 text-sm"><strong>Price:</strong> {price}</p>
-                <p className="text-gray-600 text-sm"><strong>Status:</strong> {state}</p>
-                <p className="text-gray-600 text-sm">
+                <h3 className="mb-2 text-xl font-bold">{item_data.market_hash_name}</h3>
+                <p className="text-sm text-gray-600">
+                    <strong>ID:</strong> {id}
+                </p>
+                <p className="text-sm text-gray-600">
+                    <strong>Type:</strong> {type}
+                </p>
+                <p className="text-sm text-gray-600">
+                    <strong>Price:</strong> {price}
+                </p>
+                <p className="text-sm text-gray-600">
+                    <strong>Status:</strong> {state}
+                </p>
+                <p className="text-sm text-gray-600">
                     <strong>Created:</strong> {new Date(created_at).toLocaleString()}
                 </p>
             </div>
-            <div className="flex items-center p-4 border-t border-gray-200">
-                <img
-                    className="w-10 h-10 rounded-full mr-4"
-                    src={seller.avatar}
-                    alt={`${seller.username} avatar`}
-                />
+            <div className="flex items-center border-t border-gray-200 p-4">
+                <img className="mr-4 h-10 w-10 rounded-full" src={seller_data.avatar} alt={`${seller_data.username} avatar`} />
                 <div>
-                    <p className="text-gray-900 leading-none"><strong>Seller:</strong> {seller.username}</p>
+                    <p className="leading-none text-gray-900">
+                        <strong>Seller:</strong> {seller_data.username}
+                    </p>
                 </div>
             </div>
-            <div className="p-4 border-t border-gray-200">
-                <p className="text-gray-700 text-sm">
-                    <strong>Description:</strong> {itemDetails.description}
+            <div className="border-t border-gray-200 p-4">
+                <p className="text-sm text-gray-700">
+                    <strong>Description:</strong> {item_data.description}
                 </p>
             </div>
         </div>
     );
 };
-export default function Index({ listings }: { listings: Array<{ id: number, created_at: string, type: string, price: number, state: string, seller: { avatar: string, username: string }, item: { market_hash_name: string, description: string } }> }) {
+export default function Index({ listings }: { listings: Listing[] }) {
     return (
         <AppLayout>
             <Head title="Dashboard" />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <div>hej</div>
-                {listings.map(item => (
-                <ItemCard key={item.id} item={item} />)
-                )}
+                <div>Listings</div>
+                {listings.map((item) => (
+                    <ItemCard key={item.id} item={item} />
+                ))}
             </div>
         </AppLayout>
     );
-
 }

@@ -24,20 +24,22 @@ class CSFloatService
             "Authorization" => $this->apiKey,
             ])->get("{$this->baseUrl}/{$endpoint}");
 
-        if (!$response->succesful()) {
-            throw new \Exception("API fejl: " . $response->status());
+        if (!$response->successful()) {
+            throw new \Exception("API fejl: " . $response->body());
             }
-        $data = $response->json();
+        $data = $response->json("data");
 
-        foreach ($data['listings'] as $listing) {
+        foreach ($data as $listing) {
             // Vi finder eller opretter et nyt Listing objekt.
             $listingModel = Listing::updateOrCreate(
                 ['external_id' => $listing['id']],
                 [
-                    'title' => $listing['title'],
-                    'description' => $listing['description'] ?? '',
+                    'title' => $listing['item']['item_name'],
+                    'description' => $listing['item']['item_description'],
                     'price' => $listing['price'],
                     'external_id' => $listing['id'],
+                    'seller_data' => $listing['seller_data'],
+                    'item_data' => $listing['item_data'],
                 ]
             );
         }
@@ -47,6 +49,6 @@ class CSFloatService
             'snapshot_at' => now(),
         ]);
 
-        return $data['listings'];
+        return $data;
     }
 }

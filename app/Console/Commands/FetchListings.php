@@ -13,7 +13,7 @@ class FetchListings extends Command
     public function handle()
     {
         $this->info("Henter data fra CSFloat...");
-        app(CSFloatService::class)->fetchAndStoreListings('listings-endpoint');
+        app(CSFloatService::class)->fetchAndStoreListings('listings');
         $this->info("Færdig!");
     }
 }

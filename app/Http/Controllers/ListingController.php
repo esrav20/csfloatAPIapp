@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\CSFloatService;
+use App\Models\Listing;
+use App\Models\ListingSnapshot;
 use Inertia\Inertia;
 
 class ListingController extends Controller
+
 {
     public function index(Request $request)
     {
@@ -21,8 +24,8 @@ class ListingController extends Controller
             ->paginate(10);
 
 
-        return Inertia::render('Listings/Index', [
-            'listings' => $listings,
+        return Inertia::render('listings/index', [
+            'listings' => $listings -> items(),
             'filters' => [
                 'search' => $query,
             ],

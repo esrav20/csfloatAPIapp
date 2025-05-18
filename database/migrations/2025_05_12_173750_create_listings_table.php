@@ -12,12 +12,22 @@ return new class extends Migration
     public function up()
     {
         Schema::create('listings', function (Blueprint $table) {
+
             $table->id();
-            $table->string('title'); // navn
-            $table->text('description')->nullable(); // beskrivelse
-            $table->decimal('price', 10, 2); // Price with 2 decimal points
-            $table->string('external_id')->unique(); // To track external API items
-            $table->timestamps(); // Created_at and Updated_at
+
+            $table->string('external_id')->unique(); // your "id" from JSON as string
+            $table->string('type')->nullable();
+            $table->unsignedBigInteger('price')->nullable();
+            $table->string('state')->nullable();
+            $table->json('seller')->nullable();  // Store whole seller object as JSON
+            $table->json('item')->nullable();    // Store whole item object as JSON
+            $table->boolean('is_seller')->default(false);
+            $table->unsignedBigInteger('min_offer_price')->nullable();
+            $table->unsignedInteger('max_offer_discount')->nullable();
+            $table->boolean('is_watchlisted')->default(false);
+            $table->unsignedInteger('watchers')->default(0);
+            $table->timestamp('snapshot_taken_at')->nullable();
+            $table->timestamps();
         });
     }
 
