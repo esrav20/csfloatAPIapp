@@ -11,6 +11,11 @@ class Listing extends Model
         'description',
         'price',
         'external_id',
+        'item_data',
+        'seller_data'
     ];
-}
+    protected $casts = [
+        'item_data' => 'array',
+        'seller_data' => 'array'
+    ];
 }

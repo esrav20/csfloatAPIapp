@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Listing;
 use Illuminate\Support\Facades\Http;
+use App\Models\ListingSnapshot;
 
 class CSFloatService
 {
@@ -17,16 +19,19 @@ class CSFloatService
 
     public function fetchAndStoreListings($endpoint)
     {
-        // Fetch the data from the external API
+        // Henter data fra Api via HTTP request med API key fra .env
         $response = Http::withHeaders([
             "Authorization" => $this->apiKey,
-        ])
-            ->get("{$this->baseUrl}/{$endpoint}")
-            ->json();
+            ])->get("{$this->baseUrl}/{$endpoint}");
 
-        // Process and store listings in the database
-        foreach ($response['listings'] as $listing) {
-            Listing::updateOrCreate(
+        if (!$response->succesful()) {
+            throw new \Exception("API fejl: " . $response->status());
+            }
+        $data = $response->json();
+
+        foreach ($data['listings'] as $listing) {
+            // Vi finder eller opretter et nyt Listing objekt.
+            $listingModel = Listing::updateOrCreate(
                 ['external_id' => $listing['id']],
                 [
                     'title' => $listing['title'],
@@ -36,7 +41,12 @@ class CSFloatService
                 ]
             );
         }
+        ListingSnapshot::create([
+            'listing_id' => $listingModel->id,
+            'price' => $listing['price'],
+            'snapshot_at' => now(),
+        ]);
 
-        return $response['listings'];
+        return $data['listings'];
     }
 }
