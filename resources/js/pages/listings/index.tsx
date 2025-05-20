@@ -47,10 +47,11 @@ const ItemCard = ({ item }: { item: Listing }) => {
                     <strong>Type:</strong> {type}
                 </p>
                 <p className="text-sm text-gray-600">
-                    <strong>Price:</strong> {Intl.NumberFormat('en-US', {
+                    <strong>Price:</strong>{' '}
+                    {Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: 'USD',
-                    }).format(price! /100 )}
+                    }).format(price! / 100)}
                 </p>
                 <p className="text-sm text-gray-600">
                     <strong>Status:</strong> {state}
@@ -67,11 +68,16 @@ const ItemCard = ({ item }: { item: Listing }) => {
                     </p>
                 </div>
             </div>
-            <div className="border-t border-gray-200 p-4">
-                <p className="text-sm text-gray-700">
-                    <strong>Description:</strong>{' '}
-                    <span className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: item_data.description }}></span>
-                </p>
+            <div className="text-sm text-gray-700 p-4">
+                <strong>Description:</strong>
+                <div
+                    className="mt-1"
+                    dangerouslySetInnerHTML={{
+                        __html: item_data.description ? item_data.description
+                            .replace(/\\n/g, '<br />') // Convert literal \n to <br>
+                            .trim(): "",
+                    }}
+                />
             </div>
             <div className="border-t border-gray-200 p-4">
                 <p className="mb-1 text-sm font-semibold text-gray-700">Price on last snapshot:</p>
