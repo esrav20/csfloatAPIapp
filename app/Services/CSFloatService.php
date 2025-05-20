@@ -22,7 +22,7 @@ class CSFloatService
         // Henter data fra Api via HTTP request med API key fra .env
         $response = Http::withHeaders([
             "Authorization" => $this->apiKey,
-            ])->get("{$this->baseUrl}/{$endpoint}");
+            ])->get("{$this->baseUrl}/{$endpoint}", ["sort_by" => "most_recent"]);
 
         if (!$response->successful()) {
             throw new \Exception("API fejl: " . $response->body());

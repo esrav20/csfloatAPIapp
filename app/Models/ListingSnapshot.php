@@ -13,4 +13,8 @@ class ListingSnapshot extends Model
         'price',
         'snapshot_at'
     ];
+
+    public function listing(){
+        return $this->belongsTo(Listing::class);
+    }
 }

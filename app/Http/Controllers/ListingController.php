@@ -13,22 +13,16 @@ class ListingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $request->input('search', '');
 
         // Fetch listings and filter when a query is provided
         $listings = Listing::query()
-            ->when($query, function ($q) use ($query) {
-                $q->where('title', 'like', "%{$query}%")
-                    ->orWhere('description', 'like', "%{$query}%");
-            })
-            ->paginate(10);
+            ->with("snapshots")
+            ->latest()
+            ->get();
 
 
         return Inertia::render('listings/index', [
-            'listings' => $listings -> items(),
-            'filters' => [
-                'search' => $query,
-            ],
+            'listings' => $listings,
         ]);
     }
 }

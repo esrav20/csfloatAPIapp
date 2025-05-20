@@ -1,5 +1,4 @@
 import AppLayout from '@/layouts/app-layout';
-import React from 'react';
 import { Head } from '@inertiajs/react';
 
 type Listing = {
@@ -8,23 +7,39 @@ type Listing = {
     type: string;
     price: number;
     state: string;
-    item_data: {
+    item: {
         market_hash_name: string;
         description: string;
+        icon_url: string;
     };
-    seller_data: {
+    seller: {
         avatar: string;
         username: string;
     };
+    snapshots: ListingSnapshot[];
 };
-const ItemCard = ({ item }: {item: Listing}) => {
-    const { id, created_at, type, price, state, item_data, seller_data } = item;
 
+export interface ListingSnapshot {
+    id: number;
+    listing_id: number;
+    price: number | null;
+    snapshot_at: string;
+}
+
+const ItemCard = ({ item }: { item: Listing }) => {
+    const { id, created_at, type, price, state, item: item_data, seller, snapshots } = item;
+
+    const imageUrl = item_data.icon_url.startsWith('http')
+        ? item_data.icon_url
+        : `https://steamcommunity-a.akamaihd.net/economy/image/${item_data.icon_url}`;
 
     return (
         <div className="mx-auto my-4 max-w-md overflow-hidden rounded-lg bg-white shadow-md">
             <div className="p-4">
                 <h3 className="mb-2 text-xl font-bold">{item_data.market_hash_name}</h3>
+                {/* New Image Section */}
+                <img src={imageUrl} alt={item_data.market_hash_name} className="mb-4 w-full rounded-md" />
+
                 <p className="text-sm text-gray-600">
                     <strong>ID:</strong> {id}
                 </p>
@@ -32,7 +47,10 @@ const ItemCard = ({ item }: {item: Listing}) => {
                     <strong>Type:</strong> {type}
                 </p>
                 <p className="text-sm text-gray-600">
-                    <strong>Price:</strong> {price}
+                    <strong>Price:</strong> {Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                    }).format(price! /100 )}
                 </p>
                 <p className="text-sm text-gray-600">
                     <strong>Status:</strong> {state}
@@ -42,17 +60,29 @@ const ItemCard = ({ item }: {item: Listing}) => {
                 </p>
             </div>
             <div className="flex items-center border-t border-gray-200 p-4">
-                <img className="mr-4 h-10 w-10 rounded-full" src={seller_data.avatar} alt={`${seller_data.username} avatar`} />
+                <img className="mr-4 h-10 w-10 rounded-full" src={seller.avatar} alt={`${seller.username} avatar`} />
                 <div>
                     <p className="leading-none text-gray-900">
-                        <strong>Seller:</strong> {seller_data.username}
+                        <strong>Seller:</strong> {seller.username}
                     </p>
                 </div>
             </div>
             <div className="border-t border-gray-200 p-4">
                 <p className="text-sm text-gray-700">
-                    <strong>Description:</strong> {item_data.description}
+                    <strong>Description:</strong>{' '}
+                    <span className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: item_data.description }}></span>
                 </p>
+            </div>
+            <div className="border-t border-gray-200 p-4">
+                <p className="mb-1 text-sm font-semibold text-gray-700">Price on last snapshot:</p>
+                {snapshots.map((snapshot) => (
+                    <p key={snapshot.id} className="text-sm text-gray-600">
+                        {Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        }).format(snapshot.price! / 100)}
+                    </p>
+                ))}
             </div>
         </div>
     );

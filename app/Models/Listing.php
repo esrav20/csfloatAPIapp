@@ -28,4 +28,8 @@ class Listing extends Model
         'is_seller' => 'boolean',
         'is_watchlisted' => 'boolean',
     ];
+
+    public function snapshots() {
+        return $this->hasMany(ListingSnapshot::class);
+    }
 }
