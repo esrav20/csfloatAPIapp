@@ -50,7 +50,6 @@ const ItemCard = ({ item }: { item: Listing }) => {
                 <h3 className="mb-2 text-xl font-bold">{item_data.market_hash_name}</h3>
                 <img src={imageUrl} alt={item_data.market_hash_name} className="mb-4 w-full rounded-md" />
 
-                {/* All these text elements need to inherit the parent's color or be explicitly set */}
                 <p className="text-sm"><strong>ID:</strong> {id}</p>
                 <p className="text-sm"><strong>Type:</strong> {type}</p>
                 <p className="text-sm"><strong>Price:</strong> {Intl.NumberFormat('en-US', {
@@ -60,11 +59,11 @@ const ItemCard = ({ item }: { item: Listing }) => {
                 <p className="text-sm"><strong>Status:</strong> {state}</p>
                 <p className="text-sm"><strong>Created:</strong> {new Date(created_at).toLocaleString()}</p>
             </div>
-            <div className="flex items-center border-t border-gray-700 dark:border-gray-200 p-4"> {/* Adjusted border color */}
+            <div className="flex items-center border-t border-gray-700 dark:border-gray-200 p-4">
                 <img className="mr-4 h-10 w-10 rounded-full" src={seller.avatar} alt={`${seller.username} avatar`} />
-                <div><p className="leading-none"><strong>Seller:</strong> {seller.username}</p></div> {/* Removed text-gray-900 */}
+                <div><p className="leading-none"><strong>Seller:</strong> {seller.username}</p></div>
             </div>
-            <div className="text-sm p-4"> {/* Removed text-gray-700 */}
+            <div className="text-sm p-4">
                 <strong>Description:</strong>
                 <div
                     className="mt-1"
@@ -73,10 +72,10 @@ const ItemCard = ({ item }: { item: Listing }) => {
                     }}
                 />
             </div>
-            <div className="border-t border-gray-700 dark:border-gray-200 p-4"> {/* Adjusted border color */}
-                <p className="mb-1 text-sm font-semibold">Price on last snapshot:</p> {/* Removed text-gray-700 */}
+            <div className="border-t border-gray-700 dark:border-gray-200 p-4">
+                <p className="mb-1 text-sm font-semibold">Price on last snapshot:</p>
                 {snapshots.map((snapshot) => (
-                    <p key={snapshot.id} className="text-sm"> {/* Removed text-gray-600 */}
+                    <p key={snapshot.id} className="text-sm">
                         {Intl.NumberFormat('en-US', {
                             style: 'currency',
                             currency: 'USD',
@@ -97,7 +96,7 @@ export default function Index({ listings, filters }: Props) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        get(route('listings.index'), {
+        get(route('listings'), {
             preserveScroll: true,
         });
     };
@@ -108,7 +107,6 @@ export default function Index({ listings, filters }: Props) {
             <div className="p-4">
                 <h1 className="text-2xl font-semibold mb-4">Listings</h1>
 
-                {/* Filter + sort form */}
                 <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Type</label>
@@ -155,7 +153,6 @@ export default function Index({ listings, filters }: Props) {
                     </div>
                 </form>
 
-                {/* Listings */}
                 <div className="flex flex-wrap gap-4">
                     {listings.map((item) => (
                         <ItemCard key={item.id} item={item} />
