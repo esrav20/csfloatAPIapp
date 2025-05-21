@@ -14,15 +14,18 @@ class ListingController extends Controller
     public function index(Request $request)
     {
 
-        // Fetch listings and filter when a query is provided
         $listings = Listing::query()
-            ->with("snapshots")
-            ->latest()
+            ->when($request->input('type'), fn($q, $type) => $q->where('type', $type))
+            ->when($request->input('sort'), function ($q, $sort) use ($request) {
+                $direction = $request->input('direction', 'asc');
+                return $q->orderBy($sort, $direction);
+            })
+            ->with('snapshots')
             ->get();
-
 
         return Inertia::render('listings/index', [
             'listings' => $listings,
+            'filters' => $request->only('type', 'sort', 'direction'),
         ]);
     }
 }
