@@ -8,24 +8,27 @@ use App\Models\Listing;
 use App\Models\ListingSnapshot;
 use Inertia\Inertia;
 
-class ListingController extends Controller
-
+public function index(Request $request)
 {
-    public function index(Request $request)
-    {
+    $query = $request->input('query');
 
-        $listings = Listing::query()
-            ->when($request->input('type'), fn($q, $type) => $q->where('type', $type))
-            ->when($request->input('sort'), function ($q, $sort) use ($request) {
-                $direction = $request->input('direction', 'asc');
-                return $q->orderBy($sort, $direction);
-            })
-            ->with('snapshots')
-            ->get();
+    $listings = Listing::query()
+        ->when($query, function ($q) use ($query) {
+            $q->where(function ($subQ) use ($query) {
+                $subQ->where('market_hash_name', 'like', "%$query%")
+                    ->orWhere('type', 'like', "%$query%")
+                    ->orWhere('id', $query);
+            });
+        })
+        ->when($request->input('sort'), function ($q, $sort) use ($request) {
+            $direction = $request->input('direction', 'asc');
+            $q->orderBy($sort, $direction);
+        })
+        ->with('snapshots')
+        ->get();
 
-        return Inertia::render('listings/index', [
-            'listings' => $listings,
-            'filters' => $request->only('type', 'sort', 'direction'),
-        ]);
-    }
+    return Inertia::render('listings/index', [
+        'listings' => $listings,
+        'filters' => $request->only('query', 'sort', 'direction'),
+    ]);
 }
