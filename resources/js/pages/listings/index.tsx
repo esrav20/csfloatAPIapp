@@ -160,61 +160,80 @@ export default function Index({ listings, filters }: Props) {
         e.preventDefault();
         get(route('listings'), {
             preserveScroll: true,
+            preserveState: true,
         });
     };
 
     return (
         <AppLayout>
             <Head title="Dashboard" />
-            <form onSubmit={handleSubmit} className="mb-6 flex flex-wrap gap-4">
+            <form onSubmit={handleSubmit} className="p-4 mb-6 flex flex-wrap gap-4">
+                {/* Search Input */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Search</label>
+                    <label htmlFor="search-input"
+                           className="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                     <input
+                        id="search-input"
                         type="text"
                         name="query"
                         value={data.query}
                         onChange={(e) => setData('query', e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        placeholder="Search by name, type, or ID"
-                    />
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
+                       dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 p-2"
+                        placeholder="Search by name, type, or ID" />
                 </div>
-
+                {/* Sort by Dropdown */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Sort by</label>
+                    <label htmlFor="sort-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Sort
+                        by</label>
                     <select
+                        id="sort-select"
                         name="sort"
                         value={data.sort}
                         onChange={(e) => setData('sort', e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
+                       dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 p-2
+                       appearance-none pr-8 bg-no-repeat bg-right-center"
                     >
                         <option value="">Default</option>
                         <option value="price">Price</option>
                         <option value="created_at">Created At</option>
                     </select>
                 </div>
-
+                {/* Direction Dropdown */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Direction</label>
+                    <label htmlFor="direction-select"
+                           className="block text-sm font-medium text-gray-700 dark:text-gray-300">Direction</label>
                     <select
+                        id="direction-select"
                         name="direction"
                         value={data.direction}
                         onChange={(e) => setData('direction', e.target.value as 'asc' | 'desc')}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500
+                       dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 p-2
+                       appearance-none pr-8 bg-no-repeat bg-right-center"
                     >
                         <option value="asc">Asc</option>
                         <option value="desc">Desc</option>
                     </select>
                 </div>
-
                 <div className="self-end">
-                    <button
-                        type="submit"
-                        className="rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm hover:bg-blue-700"
-                    >
+                    <button type="submit"
+                            className="rounded-md bg-blue-600 px-4 py-2 text-white shadow-sm hover:bg-blue-700">
                         Filter
                     </button>
                 </div>
             </form>
-        </AppLayout>
-    );
+            <div className="flex flex-wrap justify-center gap-6">
+            {listings.length === 0 ? (
+            <p className="text-gray-600">No listings found.</p>
+             ) : (
+            listings.map((item) => (
+                <ItemCard key={item.id} item={item} isExpanded={item.id === expandedId}
+                          onToggle={() => handleToggle(item.id)} />
+            ))
+        )}
+    </div>
+</AppLayout>
+);
 }

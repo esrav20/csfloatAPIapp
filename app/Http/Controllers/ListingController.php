@@ -8,27 +8,31 @@ use App\Models\Listing;
 use App\Models\ListingSnapshot;
 use Inertia\Inertia;
 
-public function index(Request $request)
+class ListingController extends Controller
+
 {
-    $query = $request->input('query');
+    public function index(Request $request)
+    {
+        $query = $request->input('query');
 
-    $listings = Listing::query()
-        ->when($query, function ($q) use ($query) {
-            $q->where(function ($subQ) use ($query) {
-                $subQ->where('market_hash_name', 'like', "%$query%")
-                    ->orWhere('type', 'like', "%$query%")
-                    ->orWhere('id', $query);
-            });
-        })
-        ->when($request->input('sort'), function ($q, $sort) use ($request) {
-            $direction = $request->input('direction', 'asc');
-            $q->orderBy($sort, $direction);
-        })
-        ->with('snapshots')
-        ->get();
+        $listings = Listing::query()
+            ->when($request->input('query'), function ($q, $query) {
+                $q->where(function ($sub) use ($query) {
+                    $sub->where('id', 'like', "%{$query}%")
+                        ->orWhere('type', 'like', "%{$query}%")
+                        ->orWhere('item->market_hash_name', 'like', "%{$query}%"); // JSON path
+                });
+            })
+            ->when($request->input('sort'), function ($q, $sort) use ($request) {
+                $direction = $request->input('direction', 'asc');
+                return $q->orderBy($sort, $direction);
+            })
+            ->with('snapshots')
+            ->get();
 
-    return Inertia::render('listings/index', [
-        'listings' => $listings,
-        'filters' => $request->only('query', 'sort', 'direction'),
-    ]);
+        return Inertia::render('listings/index', [
+            'listings' => $listings,
+            'filters' => $request->only('query', 'sort', 'direction'),
+        ]);
+    }
 }
